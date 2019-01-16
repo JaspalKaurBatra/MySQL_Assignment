@@ -8,39 +8,67 @@ tables, relationships, triggers and add sample data into each table.
 ###Create the tables for Note, Category, Reminder, User, UserNote, NoteReminder and NoteCategory.
 
 ###User table fields: user_id, user_name, user_added_date, user_password, user_mobile
+	create table UserTable(user_id int primary key, user_name varchar(20), user_added_date datetime, user_password varchar(20), user_mobile int);
 
 ###Note table fields: note_id, note_title, note_content, note_status, note_creation_date
+	 create table NoteTable(note_id int primary key,note_title varchar(20), note_content varchar(200),note_status varchar(10), note_creation_date datetime);
 
 ###Category table fields : category_id, category_name, category_descr, category_creation_date, category_creator
+	create table CategoryTable(category_id int primary key,category_name varchar(30), category_descr varchar(100),category_creation_date datetime,category_creator 		varchar(20));
 
 ###Reminder table fields : reminder_id, reminder_name, reminder_descr, reminder_type, reminder_creation_date, reminder_creator
+	create table ReminderTable(reminder_id int primary key,reminder_name varchar(30), reminder_descr varchar(100),reminder_type varchar(20),reminder_creation_date 		datetime,reminder_creator varchar(20));
 
 ###NoteCategory table fields : notecategory_id, note_id, category_id
+	create table NoteCategoryTable(notecategory_id int primary key, note_id int, category_id int, foreign key f1(note_id) references NoteTable(note_id) on update 		cascade on delete cascade,foreign key f2(category_id) references CategoryTable(category_id) on update cascade on delete cascade);
 
 ###Notereminder table fields : notereminder_id, note_id, reminder_id
+	create table NoteReminderTable(notereminder_id int primary key, note_id int, reminder_id int, foreign key f1(note_id) references NoteTable(note_id) on update 		cascade on delete cascade,foreign key f2(reminder_id) references ReminderTable(reminder_id) on update cascade on delete cascade);
 
 ###usernote table fields : usernote_id, user_id, note_id
+	create table UserNoteTable(usernote_id int primary key, user_id int, note_id int,foreign key f1(user_id) references UserTable(user_id) on update cascade on 		delete cascade, foreign key f2(note_id) references NoteTable(note_id) on update cascade on delete cascade);
 
 
 ###Insert the rows into the created tables (Note, Category, Reminder, User, UserNote, NoteReminder and NoteCategory).
+	insert into UserTable values(102,"Jaspal","2019-01-30 12:34:48","Secret*",789643495);
+	insert into NoteTable values(1,"Catch flight","Reach airpot by 4","Tomorrow","2019-02-02 03:24:56");
+	insert into CategoryTable values(11,"Reminder","Flight Boarding Reminder","2019-02-02 03:24:56","Self");
+	insert into ReminderTable values(50,"Flight Reminder","Flight Boarding Reminder","All Day","2019-02-02 03:24:56","User");
+	insert into NoteCategoryTable values(9,1,11);
+	insert into NoteReminderTable values(51,1,50);
+	insert into UserNoteTable values(66,102,1);
+
+
 
 ###Fetch the row from User table based on Id and Password.
+	select * from UserTable where user_id=101 and user_password="Secret*";
 
 ###Fetch all the rows from Note table based on the field note_creation_date.
+	select * from NoteTable where note_creation_date = "2019-02-02 03:24:56";
 
 ###Fetch all the Categories created after the particular Date.
+	select * from CategoryTable where category_creation_date >= "2019-02-02 03:24:56";
 
 ###Fetch all the Note ID from UserNote table for a given User.
+	select note_id from UserNoteTable x,UserTable y where x.user_id = y.user_id and x.user_id=101;
 
 ###Write Update query to modify particular Note for the given note Id.
+	update NoteTable set note_content="There is an update" where note_id=1; 
 
 ###Fetch all the Notes from the Note table by a particular User.
+	select UserTable.user_id,NoteTable.* from NoteTable,UserTable,UserNoteTable where UserTable.user_id=UserNoteTable.user_id and 					 	 NoteTable.note_id=UserNoteTable.note_id and UserTable.user_id=101;
+
 
 ###Fetch all the Notes from the Note table for a particular Category.
+	select CategoryTable.category_id,NoteTable.* from NoteTable,CategoryTable,NoteCategoryTable where CategoryTable.category_id=NoteCategoryTable.category_id and 		NoteTable.note_id=NoteCategoryTable.note_id and CategoryTable.category_id=11;
 
 ###Fetch all the reminder details for a given note id.
+	select NoteTable.note_id,ReminderTable.* from NoteTable,ReminderTable,NoteReminderTable where NoteTable.note_id=NoteReminderTable.note_id and 			  ReminderTable.reminder_id=NoteReminderTable.reminder_id and NoteTable.note_id=1;
+
 
 ###Fetch the reminder details for a given reminder id.
+	select * from ReminderTable where reminder_id="50";
+
 
 ###Write a query to create a new Note from particular User (Use Note and UserNote tables - insert statement).
 
